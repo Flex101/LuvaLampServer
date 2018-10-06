@@ -30,7 +30,7 @@ Server::~Server()
 
 void Server::start(unsigned int port)
 {
-	bool success = socket->listen(QHostAddress::LocalHost, port);
+	bool success = socket->listen(QHostAddress("192.168.0.2"), port);
 
 	if (success)
 	{
@@ -90,7 +90,7 @@ void Server::poll()
 		{
 			if (bytes.size() == 5)
 			{
-				changeColor(client, QColor(bytes[0], bytes[1], bytes[2]));
+				changeColor(client, QColor((unsigned char)bytes[0], (unsigned char)bytes[1], (unsigned char)bytes[2]));
 			}
 			else
 			{
@@ -138,6 +138,8 @@ void Server::changeColor(QTcpSocket* client, QColor color)
 	msg.append(color.red());
 	msg.append(color.green());
 	msg.append(color.blue());
+	msg.append('\r');
+	msg.append('\n');
 
 	for (ClientList::iterator it = clients.begin(); it != clients.end(); ++it)
 	{
