@@ -30,6 +30,7 @@ private slots:
 	void clientDisconnected();
 	void poll();
 	void close();
+	void keepAlive();
 
 private:
 	void addClient(QTcpSocket* client);
@@ -44,6 +45,7 @@ private:
 	QColor lampColor;
 	pthread_mutex_t clientListMutex;
 	QTimer* pollTimer;
+	QTimer* keepAliveTimer;
 
 	typedef std::vector<QTcpSocket*> ClientList;
 	ClientList clients;

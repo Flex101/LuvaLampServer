@@ -7,6 +7,8 @@
 
 using namespace LuvaLamp;
 
+typedef unsigned char Byte;
+
 Server::Server()
 {
 	socket = new QTcpServer();
@@ -18,8 +20,12 @@ Server::Server()
 	pollTimer = new QTimer();
 	pollTimer->start(100);
 
+	keepAliveTimer = new QTimer();
+	keepAliveTimer->start(5000);
+
 	connect(socket, &QTcpServer::newConnection, this, &Server::clientConnected);
 	connect(pollTimer, &QTimer::timeout, this, &Server::poll);
+	connect(keepAliveTimer, &QTimer::timeout, this, &Server::keepAlive);
 	connect(this, &Server::requestStop, this, &Server::close);
 }
 
@@ -109,6 +115,29 @@ void Server::close()
 	std::cout << "Server stopped." << std::endl;
 }
 
+void Server::keepAlive()
+{
+	if (clients.size() == 0) return;
+
+	QByteArray msg;
+	msg.append((Byte)0);
+	msg.append((Byte)0);
+	msg.append((Byte)0);
+	msg.append('\r');
+	msg.append('\n');
+
+	std::cout << "Sending keep alive msg..." << std::endl;
+
+	pthread_mutex_lock(&clientListMutex);
+
+	for (ClientList::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		(*it)->write(msg);
+	}
+
+	pthread_mutex_unlock(&clientListMutex);
+}
+
 void Server::addClient(QTcpSocket* client)
 {
 	pthread_mutex_lock(&clientListMutex);
@@ -145,7 +174,7 @@ void Server::changeColor(QTcpSocket* client, QColor color)
 	{
 		if (*it != client)
 		{
-			(**it).write(msg);
+			(*it)->write(msg);
 		}
 	}
 
