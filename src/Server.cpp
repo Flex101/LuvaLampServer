@@ -7,8 +7,6 @@
 
 using namespace LuvaLamp;
 
-typedef unsigned char Byte;
-
 Server::Server()
 {
 	socket = new QTcpServer();
@@ -120,9 +118,9 @@ void Server::keepAlive()
 	if (clients.size() == 0) return;
 
 	QByteArray msg;
-	msg.append((Byte)0);
-	msg.append((Byte)0);
-	msg.append((Byte)0);
+	msg.append((char)0);
+	msg.append((char)0);
+	msg.append((char)0);
 	msg.append('\r');
 	msg.append('\n');
 
