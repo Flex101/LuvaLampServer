@@ -98,7 +98,8 @@ void Server::poll()
 			}
 			else
 			{
-				std::cout << "Irregular message - " << bytes.toHex().toStdString().c_str() << std::endl;
+				std::string msg(bytes.toHex().constData(), bytes.toHex().length());
+				std::cout << "Irregular message - " << msg.c_str() << std::endl;
 			}
 		}
 	}
