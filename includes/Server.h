@@ -33,6 +33,7 @@ private slots:
 	void keepAlive();
 
 private:
+	QString getAddress();
 	void addClient(QTcpSocket* client);
 	void removeClient(QTcpSocket* client);
 	void changeColor(QTcpSocket* client, QColor color);

@@ -1,6 +1,7 @@
 #include "Server.h"
 
 #include <QTcpSocket>
+#include <QNetworkInterface>
 #include <QApplication>
 #include <unistd.h>
 #include <iostream>
@@ -34,7 +35,7 @@ Server::~Server()
 
 void Server::start(unsigned int port)
 {
-	bool success = socket->listen(QHostAddress("192.168.0.2"), port);
+	bool success = socket->listen(QHostAddress(getAddress()), port);
 
 	if (success)
 	{
@@ -135,6 +136,15 @@ void Server::keepAlive()
 	}
 
 	pthread_mutex_unlock(&clientListMutex);
+}
+
+QString Server::getAddress()
+{
+	foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
+	{
+		if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+			 return address.toString();
+	}
 }
 
 void Server::addClient(QTcpSocket* client)
