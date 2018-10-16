@@ -21,7 +21,7 @@ static void signalHandler(int signum)
 
 int main(int argc, char *argv[])
 {
-	QApplication app(argc, argv);
+	QCoreApplication app(argc, argv);
 
 	unsigned int port = 50005;
 	if (argc > 1) port = atoi(argv[1]);
